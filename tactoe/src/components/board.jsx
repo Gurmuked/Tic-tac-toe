@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import Square from './square';
+import calculateWinner from './winner';
 
 
-const Board = () => {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState(Array(9).fill(null));
-
+const Board = ({ xIsNext, squares, onPlay }) => {
+ 
   function handleClick(i) {
-    if ( squares[i]) {
+    if (calculateWinner(squares) || squares[i]) {
       return;
     }
     const nextSquares = squares.slice();
@@ -16,12 +15,21 @@ const Board = () => {
     } else {
       nextSquares[i] = 'O';
     }
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
+    onPlay(nextSquares);
   }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = 'Winner: ' + winner;
+  } else {
+    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+  }
+
 
   return (
     <>
+    <div style={(status==="winner") ? {color:"red", fontSize: "36px", fontWeight:"700"}:{color:"yellow", fontSize: "36px", fontWeight:"700"}}>{status}</div>
       <div className="board-row grid-cols-3">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)}/>
         <Square value={squares[1]} onSquareClick={() => handleClick(1)}/>
